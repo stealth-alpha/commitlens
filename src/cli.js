@@ -31,6 +31,10 @@ const VERSION = "0.1.0";
 
 class CommitlensError extends Error {}
 
+function cwdSafe() {
+  return process.cwd();
+}
+
 function parseArgs(argv) {
   const flags = {};
   const positional = [];
@@ -82,6 +86,8 @@ ${bold("Options")}
   --strict              Fail on warnings too
   --format <f>          Output format (text | json for check; md | json for notes)
   --write               Write notes to RELEASE_NOTES.md instead of stdout
+  --tag <v1.2.3>        Label the notes with a version heading (notes command)
+  --date <YYYY-MM-DD>   Date shown next to --tag
   --cwd <dir>           Project directory (default: current directory)
 
 ${bold("Examples")}
@@ -210,6 +216,13 @@ async function cmdNotes(flags) {
   const meta = {
     range: range || "HEAD",
     project: getProjectName(cwd),
+    version: flags.tag || null,
+    date:
+      flags.tag
+        ? typeof flags.date === "string"
+          ? flags.date
+          : new Date().toISOString().slice(0, 10)
+        : null,
     commitCount: parsed.length,
   };
 
@@ -295,7 +308,15 @@ export async function main(argv) {
         printHelp();
         break;
       case "check": {
-        if (positional[1]) flags._file = positional[1];
+        if (positional[1]) {
+          const candidate = path.resolve(cwdSafe(), positional[1]);
+          if (!fs.existsSync(candidate)) {
+            throw new CommitlensError(
+              `Not a commit-message file: ${positional[1]} (pass a git range via --range instead)`
+            );
+          }
+          flags._file = candidate;
+        }
         await cmdCheck(flags);
         break;
       }
