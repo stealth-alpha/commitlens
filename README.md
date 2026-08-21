@@ -25,9 +25,9 @@ CommitLens answers three questions in one command:
 ## Install
 
 ```bash
-npm i -g commitlens
+npm i -g @stealth-alpha/commitlens
 # or run without installing:
-npx commitlens check
+npx @stealth-alpha/commitlens check
 ```
 
 ## 30-second quickstart
@@ -88,7 +88,7 @@ With no `--range` flag, CommitLens reviews exactly what you're about to push:
 ```bash
 # .git/hooks/commit-msg
 #!/bin/sh
-npx commitlens check "$1"
+npx @stealth-alpha/commitlens check "$1"
 ```
 
 **pre-push** (lint the whole outgoing range):
@@ -96,7 +96,7 @@ npx commitlens check "$1"
 ```bash
 # .git/hooks/pre-push
 #!/bin/sh
-npx commitlens check --strict
+npx @stealth-alpha/commitlens check --strict
 ```
 
 ## Configuration

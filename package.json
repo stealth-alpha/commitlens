@@ -1,5 +1,5 @@
 {
-  "name": "commitlens",
+  "name": "@stealth-alpha/commitlens",
   "version": "0.1.0",
   "description": "Conventional-commit linter with release-notes preview and breaking-change detection — catch problems before you push.",
   "type": "module",
