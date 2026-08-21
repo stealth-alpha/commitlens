@@ -1,0 +1,50 @@
+{
+  "name": "commitlens",
+  "version": "0.1.0",
+  "description": "Conventional-commit linter with release-notes preview and breaking-change detection — catch problems before you push.",
+  "type": "module",
+  "bin": {
+    "commitlens": "./bin/commitlens.js"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./cli": "./src/cli.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "conventional-commits",
+    "linter",
+    "commit-linter",
+    "release-notes",
+    "semver",
+    "breaking-changes",
+    "changelog",
+    "git",
+    "cli",
+    "pre-push"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "CommitLens Contributors"
+  },
+  "homepage": "https://stealth-alpha.github.io/commitlens/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stealth-alpha/commitlens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stealth-alpha/commitlens/issues"
+  }
+}

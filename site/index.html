@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CommitLens — catch commit problems before you push</title>
+<meta name="description" content="CommitLens is a zero-dependency conventional-commit linter that previews your release notes and flags breaking changes before you push.">
+<style>
+:root{--bg:#0b0f17;--bg2:#111827;--panel:#0f172a;--border:#1f2937;--text:#e5e7eb;--muted:#94a3b8;--accent:#22d3ee;--accent2:#6366f1;--ok:#34d399;--warn:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:28px;padding:16px 0;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--text)}
+.brand .dot{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.links{display:flex;gap:16px;margin-left:auto;align-items:center}
+.links a{color:var(--muted);font-weight:500;font-size:15px}
+.links a:hover{color:var(--text);text-decoration:none}
+.btn{display:inline-block;border-radius:10px;padding:10px 18px;font-weight:600;font-size:15px;border:1px solid transparent}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn.ghost{border-color:var(--border);color:var(--text)}
+.btn.small{padding:7px 14px;font-size:13.5px}
+section{padding:72px 0}
+.hero{text-align:center;padding:88px 0 64px}
+.eyebrow{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;margin-bottom:22px}
+.hero h1{font-size:clamp(2.4rem,5vw,4rem);letter-spacing:-.035em;line-height:1.05;margin:.4rem auto 20px;max-width:840px}
+.hero h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:clamp(1.05rem,2.2vw,1.3rem);max-width:680px;margin:0 auto 32px}
+.ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.term{max-width:760px;margin:44px auto 0;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.term .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.term .bar .c{width:12px;height:12px;border-radius:50%}
+.term .bar .c.r{background:#ef4444}.term .bar .c.y{background:#f59e0b}.term .bar .c.g{background:#10b981}
+.term .bar .t{margin-left:12px;color:var(--muted);font-size:13px}
+.term pre{margin:0;padding:18px 22px;color:#cbd5e1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.7;overflow-x:auto}
+.term .p{color:#64748b}.term .g{color:var(--ok)}.term .r{color:#ef4444}.term .y{color:var(--warn)}.term .dim{color:#64748b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px}
+.card h3{margin:0 0 8px;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card .ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-size:20px;margin-bottom:14px}
+.section-head{text-align:center;margin-bottom:44px}
+.section-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem);letter-spacing:-.02em;margin:0 0 10px}
+.section-head p{color:var(--muted);max-width:640px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;counter-reset:step}
+.step{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative}
+.step::before{counter-increment:step;content:counter(step);position:absolute;top:20px;right:22px;font-size:32px;font-weight:800;color:color-mix(in srgb,var(--accent) 60%,transparent)}
+.step .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--accent);font-size:14px}
+.tier{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column}
+.tier.featured{border-color:var(--accent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 12%,var(--bg2)),var(--bg2))}
+.tier .name{font-weight:700;font-size:17px}
+.tier .price{font-size:38px;font-weight:800;letter-spacing:-.03em;margin:14px 0}
+.tier .price .per{font-size:15px;color:var(--muted);font-weight:500}
+.tier ul{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:10px;flex:1}
+.tier li{color:var(--muted);font-size:14.5px;display:flex;gap:10px}
+.tier li::before{content:"✓";color:var(--ok);font-weight:700}
+.tier .btn{margin-top:auto;text-align:center}
+.faq{max-width:760px;margin:0 auto}
+.qa{padding:20px 0;border-bottom:1px solid var(--border)}
+.qa h3{font-size:17px;margin:0 0 8px}
+.qa p{margin:0;color:var(--muted)}
+footer{border-top:1px solid var(--border);padding:40px 0;color:var(--muted);font-size:14px;text-align:center}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media(max-width:640px){.links a.hide{display:none}}
+</style>
+</head>
+<body>
+<header class="nav wrap">
+  <a class="brand" href="#"><span class="dot"></span>CommitLens</a>
+  <nav class="links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a class="btn primary small" href="https://github.com/stealth-alpha/commitlens">GitHub</a>
+  </nav>
+</header>
+
+<section class="hero wrap">
+  <div class="eyebrow">Open-core · zero dependencies · works offline · MIT</div>
+  <h1>Catch commit problems <span class="grad">before you push</span>.</h1>
+  <p>CommitLens lints your unpushed conventional commits, previews the release
+  notes they'll produce, and flags breaking changes — before they hit <span class="kbd">main</span>.</p>
+  <div class="ctas">
+    <a class="btn primary" href="#install">npm i -g commitlens</a>
+    <a class="btn ghost" href="#how">See it work</a>
+  </div>
+  <div class="term">
+    <div class="bar"><span class="c r"></span><span class="c y"></span><span class="c g"></span><span class="t">~/acme-api — commitlens check</span></div>
+    <pre><span class="p">$</span> commitlens check
+<span class="dim">commitlens · origin/main..HEAD · feature/api</span>
+<span class="g">✓</span> feat(api): add pagination
+<span class="r">✗</span> totally rewrote the auth layer
+   <span class="r">error</span> type-empty: commit does not follow Conventional Commits
+   <span class="y">warn</span> breaking-migration-note: add a "BREAKING CHANGE:" footer
+
+<span class="dim">2 commits · 1 clean · 1 warning · 1 error</span>
+
+<span class="p">$</span> commitlens notes --range origin/main..HEAD
+<span class="g">### ⚠ BREAKING CHANGES</span>
+<span class="y">- **auth**: rewrite flow — migrate via `auth migrate`</span></pre>
+  </div>
+</section>
+
+<section id="features" class="wrap">
+  <div class="section-head">
+    <h2>Three questions, one command</h2>
+    <p>The checks every conventional-commit team needs, run against exactly what you're about to push.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="ico">🔍</div><h3>Spec-aware linting</h3><p>Type/scope/subject rules from the Conventional Commits spec plus length limits, all tunable per repo through one JSON config.</p></div>
+    <div class="card"><div class="ico">📝</div><h3>Release-notes preview</h3><p>See the grouped markdown your push will generate — Features, Fixes, and everything else — straight from your history.</p></div>
+    <div class="card"><div class="ico">💥</div><h3>Breaking-change radar</h3><p>Detects both <span class="kbd">!</span> bangs and <span class="kbd">BREAKING CHANGE:</span> footers, and nags until each one carries a migration note.</p></div>
+    <div class="card"><div class="ico">🪝</div><h3>Hook-native</h3><p>Drop two lines into <span class="kbd">commit-msg</span> or <span class="kbd">pre-push</span>. Exit codes do the enforcement — no daemon, no config framework.</p></div>
+    <div class="card"><div class="ico">🧭</div><h3>Smart ranges</h3><p>No flag? It reviews <span class="kbd">upstream..HEAD</span>, or since the last semver tag. It always inspects exactly what you're about to ship.</p></div>
+    <div class="card"><div class="ico">⚡</div><h3>Zero dependencies</h3><p>Pure Node built-ins. Installs in milliseconds, runs offline, adds no supply-chain surface to your project.</p></div>
+  </div>
+</section>
+
+<section id="how" class="wrap">
+  <div class="section-head">
+    <h2>Up and running in under a minute</h2>
+  </div>
+  <div class="steps" id="install">
+    <div class="step"><h3>Install</h3><p class="code">npm i -g commitlens</p><p style="color:var(--muted)">Or use <span class="code">npx commitlens</span> without installing.</p></div>
+    <div class="step"><h3>Check</h3><p class="code">commitlens check</p><p style="color:var(--muted)">Lints every unpushed commit with clear rule names and exit codes CI can gate on.</p></div>
+    <div class="step"><h3>Preview</h3><p class="code">commitlens notes</p><p style="color:var(--muted)">See the release notes your push produces, breaking changes on top.</p></div>
+    <div class="step"><h3>Tune</h3><p class="code">commitlens init</p><p style="color:var(--muted)">Write a config: allowed types, lengths, and per-rule severities.</p></div>
+  </div>
+</section>
+
+<section id="pricing" class="wrap">
+  <div class="section-head">
+    <h2>Simple pricing</h2>
+  </div>
+  <div class="grid">
+    <div class="tier">
+      <div class="name">Open source</div>
+      <div class="price">$0<span class="per"> forever</span></div>
+      <ul>
+        <li>All lint rules + config</li>
+        <li>Release-notes &amp; breaking-change previews</li>
+        <li>Git hooks &amp; CI exit codes</li>
+        <li>Zero dependencies, MIT licensed</li>
+      </ul>
+      <a class="btn ghost" href="https://github.com/stealth-alpha/commitlens">Use it now</a>
+    </div>
+    <div class="tier featured">
+      <div class="name">CommitLens Pro</div>
+      <div class="price">$9<span class="per"> /month</span></div>
+      <ul>
+        <li>Shared team rule packs</li>
+        <li>Convention-drift dashboard across repos</li>
+        <li>GitHub App merge policy for breaking changes</li>
+        <li>Slack/email release digests</li>
+      </ul>
+      <a class="btn primary" href="#">License via Gumroad</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="wrap">
+  <div class="section-head"><h2>FAQ</h2></div>
+  <div class="faq">
+    <div class="qa"><h3>Does this replace commitlint?</h3><p>It covers the core conventional-commit linting most teams actually use, and adds what commitlint doesn't give you out of the box: release-notes preview and breaking-change reporting for the exact range you're pushing — as one zero-dependency binary.</p></div>
+    <div class="qa"><h3>What does "zero dependencies" mean?</h3><p>Everything is built on Node 18+ built-ins. Your install pulls exactly one package and nothing else.</p></div>
+    <div class="qa"><h3>How are breaking changes detected?</h3><p>Two ways: a <span class="kbd">!</span> after the scope in the subject, or a <span class="kbd">BREAKING CHANGE:</span>/<span class="kbd">BREAKING-CHANGE:</span> footer in the body. Both are reported with their migration note when present.</p></div>
+  </div>
+</section>
+
+<footer class="wrap">
+  CommitLens — MIT licensed. Built by stealth-alpha.
+</footer>
+</body>
+</html>
