@@ -38,14 +38,13 @@ $ cd your-project
 # Lint everything you haven't pushed yet
 $ commitlens check
 commitlens · origin/main..HEAD · feature/api
-✓ feat(api): add pagination
-✗ fix(api): handle empty body.
-   warn subject-full-stop: subject must not end with a period
 ✗ totally rewrote the auth layer
    error type-empty: commit does not follow Conventional Commits ("type: description")
-   warn breaking-migration-note: breaking change without a "BREAKING CHANGE: <migration note>" footer
+✗ fix(api): handle empty body.
+   warn subject-full-stop: subject must not end with a period
+✓ feat(api): add pagination
 
-2 commits · 1 clean · 2 warnings · 2 errors
+3 commits · 1 clean · 1 warning · 1 error · 1 breaking
 ```
 
 Preview the release notes this push will produce:
@@ -55,22 +54,23 @@ $ commitlens notes --range origin/main..HEAD
 ## Unreleased
 
 ### ⚠ BREAKING CHANGES
-- **api**: rewrite auth flow — tokens are now opaque, migrate via `auth migrate`
-
-### Features
-- **api**: add pagination (#42)
+- totally rewrote the auth layer — tokens are now opaque
 
 ### Bug Fixes
-- handle empty body
+- **api**: handle empty body.
+
+### Features
+- **api**: add pagination
 ```
+(The sample repo's third commit carries a `BREAKING CHANGE: tokens are now opaque` footer.)
 
 Check breaking changes alone:
 
 ```bash
 $ commitlens breaking
 • 1 breaking change(s) in origin/main..HEAD:
-  ! rewrite auth flow — tokens are now opaque, migrate via `auth migrate` (f3a09c1)
-⚠ This push will introduce breaking changes — bump MAJOR before releasing.
+  ! totally rewrote the auth layer — tokens are now opaque (f3a09c1)
+warn: This push will introduce breaking changes — bump MAJOR before releasing.
 ```
 
 ## How it picks its range

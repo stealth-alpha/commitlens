@@ -89,16 +89,17 @@ footer{border-top:1px solid var(--border);padding:40px 0;color:var(--muted);font
     <div class="bar"><span class="c r"></span><span class="c y"></span><span class="c g"></span><span class="t">~/acme-api — commitlens check</span></div>
     <pre><span class="p">$</span> commitlens check
 <span class="dim">commitlens · origin/main..HEAD · feature/api</span>
-<span class="g">✓</span> feat(api): add pagination
 <span class="r">✗</span> totally rewrote the auth layer
    <span class="r">error</span> type-empty: commit does not follow Conventional Commits
-   <span class="y">warn</span> breaking-migration-note: add a "BREAKING CHANGE:" footer
+<span class="r">✗</span> fix(api): handle empty body.
+   <span class="y">warn</span> subject-full-stop: subject must not end with a period
+<span class="g">✓</span> feat(api): add pagination
 
-<span class="dim">2 commits · 1 clean · 1 warning · 1 error</span>
+<span class="dim">3 commits · 1 clean · 1 warning · 1 error · 1 breaking</span>
 
 <span class="p">$</span> commitlens notes --range origin/main..HEAD
 <span class="g">### ⚠ BREAKING CHANGES</span>
-<span class="y">- **auth**: rewrite flow — migrate via `auth migrate`</span></pre>
+<span class="y">- totally rewrote the auth layer — tokens are now opaque</span></pre>
   </div>
 </section>
 
