@@ -20,6 +20,10 @@ function runGit(args, cwd) {
     cwd,
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
+    // Pipe stderr instead of inheriting it: optional probes (upstream, tags)
+    // fail routinely and must not splatter raw "fatal:" lines on every run.
+    // On failure execFileSync still surfaces piped stderr via err.message.
+    stdio: ["ignore", "pipe", "pipe"],
   });
 }
 

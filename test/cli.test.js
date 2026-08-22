@@ -146,3 +146,30 @@ test("unknown command exits non-zero with a helpful error", () => {
     removeDir(dir);
   }
 });
+
+test("no raw git stderr leaks on repos without an upstream or tags", () => {
+  const dir = makeGitRepo([{ message: "chore: only commit" }]);
+  try {
+    for (const args of [["notes"], ["--help"], ["--version"], []]) {
+      const res = runCli(args, dir);
+      assert.doesNotMatch(
+        res.stderr,
+        /fatal:/,
+        `git fatal leaked to stderr for: ${args.join(" ") || "(default)"}`
+      );
+    }
+  } finally {
+    removeDir(dir);
+  }
+});
+
+test("real errors still explain themselves (not a git repo)", () => {
+  const dir = fs.mkdtempSync(path.join(path.dirname(makeGitRepo([])), "nogit-"));
+  try {
+    const res = runCli(["check"], dir);
+    assert.equal(res.status, 1);
+    assert.match(res.stderr + res.stdout, /not.*git|git repo/i);
+  } finally {
+    removeDir(dir);
+  }
+});
